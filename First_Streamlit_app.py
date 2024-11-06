@@ -1,40 +1,29 @@
-# import streamlit as st
-
-# tti = st.Page("page_1.py", title="Text GenAI Model", icon=":material/psychology:")
-# itt = st.Page("page_2.py", title="Text to Image Model", icon=":material/psychology:")
-
-# pg = st.navigation({
-#     "Text to Image":[tti, itt],
-    
-# })
-
-# st.set_page_config(page_title="GenAI Models")
-# pg.run()
-
 import streamlit as st
 from transformers import pipeline
 from huggingface_hub import login
 import torch
 import os
 
-# Free up GPU memory
+# Free up any unnecessary cache memory
 torch.cuda.empty_cache()
 
-# Set environment variable to avoid fragmentation
+# Set environment variable for PyTorch memory allocation
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
-access_token_read = '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'
-login(token = access_token_read)
+# Use Streamlit secrets for the access token
+access_token_read = st.secrets["HUGGINGFACE_TOKEN"]  # Ensure this is configured in Streamlit Cloud
+login(token=access_token_read)
 
-# device = 0 if torch.cuda.is_available() else -1
-pipe = pipeline("text-generation", model="HuggingFaceTB/SmolLM2-1.7B-Instruct")
+# Use CPU as Streamlit Cloud does not have GPU support
+device = -1
+
+# Load the text generation pipeline
+pipe = pipeline("text-generation", model="HuggingFaceTB/SmolLM2-1.7B-Instruct", device=device)
 
 st.title("Text GenAI Model")
 text = st.text_input("Enter Your Prompt")
-messages = [
-    {"role": "user"},
-]
-messages[0]["content"] = text
 
-gentext = pipe(messages, max_new_tokens=100)
-st.write(gentext)[1]["content"]
+if text:
+    messages = [{"role": "user", "content": text}]
+    gentext = pipe(messages, max_new_tokens=100)
+    st.write(gentext[0]["generated_text"])  # Adjust based on the output format of your model
