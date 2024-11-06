@@ -4,23 +4,27 @@ from huggingface_hub import login
 import torch
 import os
 
-# Free up GPU memory (optional, if using GPU)
+# Set page configuration
+st.set_page_config(page_title="Text GenAI Model", page_icon="🤖")
+st.title("Text GenAI Model")
+st.subheader("Generate Text Using Hugging Face Models")
+
+# Fetch Hugging Face token from Streamlit Secrets
+access_token_read = st.secrets["HUGGINGFACE_TOKEN"]  # Ensure this is set in your Streamlit Cloud Secrets
+
+# Free up GPU memory (if using GPU)
 torch.cuda.empty_cache()
 
-# Set environment variable to avoid fragmentation (optional, if using GPU)
+# Set environment variable to avoid fragmentation
 os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
-# Login with Hugging Face token
-access_token_read = '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'
+# Login to Hugging Face Hub using the access token
 login(token=access_token_read)
 
-# Set the device to CPU (Streamlit Cloud might not support GPU)
-device = -1  # Using CPU for Streamlit Cloud
-pipe = pipeline("text-generation", model="HuggingFaceTB/SmolLM2-1.7B-Instruct", device=device)
+# Initialize the text generation pipeline with a smaller model (for better compatibility on Streamlit Cloud)
+pipe = pipeline("text-generation", model="distilgpt2", device=-1)  # Using CPU, adjust based on availability
 
-st.title("Text GenAI Model")
-
-# Input prompt from the user
+# Input from the user
 text = st.text_input("Enter Your Prompt")
 
 if text:
