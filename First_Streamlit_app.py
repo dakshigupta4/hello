@@ -29,7 +29,7 @@ text = st.text_input("Ask a Random Question")
 
 if text:
     # Generate text based on the random question
-    response = pipe(f"Answer the question: {text}", max_length=250, num_return_sequences=1)
+    response = pipe(f"Answer the question: {text}", max_length=150, num_return_sequences=1)
     
     # Display the generated response
     st.write(f"Answer: {response[0]['generated_text']}")
