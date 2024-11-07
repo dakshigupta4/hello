@@ -20,7 +20,7 @@ login(token=access_token_read)
 try:
     # Load the larger model for text generation
     with st.spinner("Loading model... This may take a few moments."):
-        pipe = pipeline("text-generation", model="HuggingFaceTB/SmolLM2-1.7B-Instruct", device=-1)  # Set to CPU
+        pipe = pipeline("text-generation", model="facebook/blenderbot-400M-distill", device=-1)  # Set to CPU
     st.success("Model loaded successfully.")
 except Exception as e:
     st.error(f"Error loading model: {e}")
