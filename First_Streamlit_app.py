@@ -22,7 +22,7 @@ os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 login(token=access_token_read)
 
 # Initialize the text generation pipeline with GPT-2 model
-pipe = pipeline("text-generation", model="gpt2", device=-1)  # Using CPU
+pipe = pipeline("text-generation", model="HuggingFaceTB/SmolLM2-1.7B-Instruct", device=-1)  # Using CPU
 
 # Input from the user
 text = st.text_input("Ask a Random Question")
