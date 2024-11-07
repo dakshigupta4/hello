@@ -1,37 +1,31 @@
 import streamlit as st
 from transformers import pipeline
 from huggingface_hub import login
-import os
 
-# Set page configuration
+# Set up the page
 st.set_page_config(page_title="Text GenAI Model", page_icon="🤖")
 st.title("Text GenAI Model")
 st.subheader("Answer Random Questions Using Hugging Face Models")
 
-# Fetch Hugging Face token from Streamlit Secrets
+# Login to Hugging Face
 access_token_read = st.secrets["HUGGINGFACE_TOKEN"]
-
-# Set environment variable to avoid fragmentation (optional)
-os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
-
-# Login to Hugging Face Hub using the access token
 login(token=access_token_read)
 
+# Initialize the BlenderBot model
 try:
-    # Load the larger model for text generation
-    with st.spinner("Loading model... This may take a few moments."):
-        pipe = pipeline("text-generation", model="facebook/blenderbot-400M-distill", device=-1)  # Set to CPU
+    with st.spinner("Loading model..."):
+        pipe = pipeline("conversational", model="facebook/blenderbot-400M-distill", device=-1)
     st.success("Model loaded successfully.")
 except Exception as e:
     st.error(f"Error loading model: {e}")
 
-# Input from the user
+# User input
 text = st.text_input("Ask a Random Question")
 
 if text:
-    # Generate text based on the random question
+    # Generate response using conversational pipeline
     try:
-        response = pipe(f"Answer the question: {text}", max_length=150, num_return_sequences=1)
+        response = pipe(f"Answer the question: {text}")
         st.write(f"Answer: {response[0]['generated_text']}")
     except Exception as e:
-        st.error(f"An error occurred while generating text: {e}")
+        st.error(f"Error generating response: {e}")
